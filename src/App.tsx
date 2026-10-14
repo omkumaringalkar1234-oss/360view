@@ -17,8 +17,11 @@ function AppRoutes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-950">
-        <div className="animate-spin-slow text-primary-500">Loading...</div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-dark-950 text-white">
+        <div className="relative flex items-center justify-center mb-4">
+          <div className="w-12 h-12 rounded-full border-2 border-primary-500/20 border-t-primary-500 animate-spin" />
+        </div>
+        <p className="text-dark-300 font-medium text-sm tracking-wide">Loading PanoTour...</p>
       </div>
     );
   }

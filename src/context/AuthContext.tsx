@@ -26,6 +26,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If Firebase is not configured or auth is not initialized, operate in instant local mode
+    if (!isFirebaseConfigured || !auth) {
+      const localStored = localStorage.getItem(LOCAL_USER_KEY);
+      if (localStored) {
+        try {
+          setUser(JSON.parse(localStored));
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+      return;
+    }
+
     let unsubscribe = () => {};
 
     try {
@@ -73,7 +89,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
 
-    return () => unsubscribe();
+    // Safety timeout: Never leave app in loading state longer than 1.2 seconds
+    const safetyTimer = setTimeout(() => {
+      setLoading(false);
+    }, 1200);
+
+    return () => {
+      clearTimeout(safetyTimer);
+      unsubscribe();
+    };
   }, []);
 
   const createUserProfile = async (fbUser: FirebaseUser, displayName: string) => {
